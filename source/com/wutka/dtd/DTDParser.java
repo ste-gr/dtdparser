@@ -311,6 +311,17 @@ public class DTDParser implements EntityExpansion
             element = new DTDElement(name.value);
             dtd.elements.put(element.name, element);
         }
+        else if (element.content != null)
+        {
+// 070501 MAW: Since the ATTLIST tag can also cause an element to be created,
+// only throw this exception if the element has content defined, which
+// won't happen when you just create an ATTLIST. Thanks to
+// Jags Krishnamurthy of Object Edge for pointing out this problem - 
+// originally the parser would let you define an element more than once.
+            throw new DTDParseException(scanner.getUriId(),
+                "Found second definition of element: "+name.value,
+                        scanner.getLineNumber(), scanner.getColumn());
+        }
 
         dtd.items.addElement(element);
         parseContentSpec(scanner, element);
@@ -734,10 +745,20 @@ public class DTDParser implements EntityExpansion
 
         DTDEntity entity = (DTDEntity) dtd.entities.get(name.value);
 
+        boolean skip = false;
+
         if (entity == null)
         {
             entity = new DTDEntity(name.value, defaultLocation);
             dtd.entities.put(entity.name, entity);
+        }
+        else
+        {
+// 070501 MAW: If the entity already exists, create a dummy entity - this way
+// you keep the original definition.  Thanks to Jags Krishnamurthy of Object
+// Edge for pointing out this problem and for pointing out the solution
+            entity = new DTDEntity(name.value, defaultLocation);
+            skip = true;
         }
 
         dtd.items.addElement(entity);
@@ -746,7 +767,7 @@ public class DTDParser implements EntityExpansion
 
         parseEntityDef(entity);
 
-        if (entity.isParsed && (entity.value != null))
+        if (entity.isParsed && (entity.value != null) && !skip)
         {
             scanner.addEntity(entity.name, entity.value);
         }
@@ -788,7 +809,27 @@ public class DTDParser implements EntityExpansion
                                 scanner.getLineNumber(), scanner.getColumn());
             }
 
-            if (entity.isParsed)
+
+            // ISSUE: isParsed is set to TRUE if this is a Parameter Entity
+            //     Reference (assuming this is because Parameter Entity
+            //     external references are parsed, whereas General Entity
+            //     external references are irrelevant for this product).
+            //     However, NDATA is only valid if this is
+            //     a General Entity Reference. So, "if" conditional should
+            //     be (!entity.isParsed) rather than (entity.isParsed).
+            //
+            //Entity Declaration
+            // [70] EntityDecl ::= GEDecl | PEDecl
+            // [71] GEDecl ::= '<!ENTITY' S Name S EntityDef S? '>'
+            // [72] PEDecl ::= '<!ENTITY' S '%' S Name S PEDef S? '>'
+            // [73] EntityDef ::= EntityValue | (ExternalID NDataDecl?)
+            // [74] PEDef ::= EntityValue | ExternalID
+            //External Entity Declaration
+            // [75] ExternalID ::= 'SYSTEM' S SystemLiteral
+            //          | 'PUBLIC' S PubidLiteral S SystemLiteral
+            // [76] NDataDecl ::= S 'NDATA' S Name [ VC: Notation Declared ]
+
+            if (!entity.isParsed) // CHANGE 1
             {
                 token = scanner.peek();
                 if (token.type == Scanner.IDENTIFIER)
@@ -799,7 +840,12 @@ public class DTDParser implements EntityExpansion
                             "Invalid NData declaration",
                             scanner.getLineNumber(), scanner.getColumn());
                     }
+                    // CHANGE 2: Add call to scanner.get.
+                    //      This gets "NDATA" IDENTIFIER.
+                    token = scanner.get();
+                    // Get the NDATA "Name" IDENTIFIER.
                     token = expect(Scanner.IDENTIFIER);
+                    // Save the ndata value
                     entity.ndata = token.value;
                 }
             }

@@ -471,17 +471,68 @@ class Scanner
     public void skipConditional()
         throws IOException
     {
-        int ch;
+// 070401 MAW: Fix for nested conditionals provided by Noah Fike
+        // BEGIN CHANGE
+        int ch = 0;
+        int nestingDepth = 0; // Add nestingDepth parameter
+
+//    Everything is ignored within an ignored section, except the
+//    sub-section delimiters '<![' and ']]>'. These must be balanced,
+//    but no section keyword is required:
+//    Conditional Section
+//[61] conditionalSect ::=  includeSect | ignoreSect
+//[62] includeSect ::=  '<![' S? 'INCLUDE' S? '[' extSubsetDecl ']]>'
+//[63] ignoreSect ::=  '<![' S? 'IGNORE' S? '[' ignoreSectContents* ']]>'
+//[64] ignoreSectContents ::=  Ignore ('<![' ignoreSectContents ']]>' Ignore)*
+//[65] Ignore ::=  Char* - (Char* ('<![' | ']]>') Char*)
 
         for (;;)
         {
-            ch = read();
-
-            if (ch != ']') continue;
-            if (read() != ']') continue;
-            if (read() != '>') continue;
-            break;
+            if ( ch != ']' )
+            {
+                ch = read();
+            }
+            if (ch == ']')
+            {
+                ch = read();
+                if (ch == ']')
+                {
+                    ch = read();
+                    if (ch == '>')
+                    {
+                        if ( nestingDepth == 0)
+                        {
+                            // The end of the IGNORE conditional section
+                            // has been found.  Break out of for loop.
+                            break;
+                        }
+                        else
+                        {
+                            // We are within an ignoreSectContents section.  Decrement
+                            // the nesting depth to represent that this section has
+                            // been ended.
+                            nestingDepth--;
+                        }
+                    }
+                }
+            }
+            // See if this is the first character of the beginning of a new section.
+            if (ch == '<')
+            {
+                ch = read();
+                if ( ch == '!' )
+                {
+                    ch = read();
+                    if ( ch == '[' )
+                    {
+                        // The beginning of a new ignoreSectContents section
+                        // has been found.  Increment nesting depth.
+                        nestingDepth++;
+                    }
+                }
+            }
         }
+// END CHANGE
     }
 
     public String getUriId() { return(in.id); }

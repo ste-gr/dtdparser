@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+<project name="masterbuild" default="build" basedir=".">
+
+  <!--
+    ============================================================
+    properties
+    ============================================================
+   -->
+  <property name="dist" value="dist"/>
+  <property name="ext" value="ext"/>
+  <property name="lib" value="classes"/>
+  <property name="src" value="source"/>
+  <property file="product.properties"/>
+  <property name="prod.distbase" value="${prod.name}-${prod.version.major}.${prod.version.minor}"/>
+  <property name="prod.jar" value="${prod.distbase}/${prod.name}${prod.version.major}${prod.version.minor}.jar"/>
+  <property name="doc" value="${prod.distbase}/doc"/>
+
+  <!--
+    ============================================================
+    declarations
+    ============================================================
+   -->
+  <path id="default.classpath">
+  </path>
+
+
+  <!--
+    ============================================================
+    top-level build targets
+    ============================================================
+   -->
+  <target name="prepare">
+    <mkdir dir="${doc}"/>
+    <mkdir dir="${lib}"/>
+  </target>
+
+  <target name="build" depends="prepare">
+    <antcall target="compile"/>
+    <antcall target="makejar"/>
+  </target>
+
+  <target name="compile">
+    <javac srcdir="${src}" destdir="${lib}"
+           deprecation="on">
+      <classpath refid="default.classpath"/>
+    </javac>
+  </target>
+
+  <target name="makejar">
+    <jar jarfile="${prod.jar}" whenempty="skip">
+      <fileset dir="${lib}" includes="com/"/>
+    </jar>
+    <copy file="${prod.jar}" todir="${dist}"/>
+  </target>
+
+  <target name="createdoc">
+    <javadoc packagenames="com.wutka.*"
+             sourcepath="${src}"
+             classpathref="default.classpath"
+             destdir="${doc}"
+             author="true"
+             version="true"
+             use="true"
+             windowtitle="DTDParser API"
+             doctitle="&lt;h1&gt;DTDParser API&lt;/h1&gt;"
+             bottom="&lt;i&gt;Copyright &#169; 2001 Mark Wutka.&lt;/i&gt;">
+      <link href="http://java.sun.com/j2se/1.3/docs/api/"/>
+    </javadoc>    
+  </target>
+
+  <target name="dist" depends="build,createdoc">
+    <exec executable="cvs">
+      <arg line="-q export -D now -d ${prod.distbase} ${prod.name}"/>
+    </exec>
+    <tar tarfile="${dist}/${prod.distbase}.tar"
+         basedir="${prod.distbase}"/>
+    <gzip zipfile="${dist}/${prod.distbase}.tgz"
+          src="${dist}/${prod.distbase}.tar"/>
+    <zip zipfile="${dist}/${prod.distbase}.zip"
+         basedir="${prod.distbase}"/>
+    <delete file="${dist}/${prod.distbase}.tar"/>
+    <delete dir="${prod.distbase}"/>
+  </target>
+
+
+  <!--
+    ============================================================
+    cleanup
+    ============================================================
+   -->
+  <target name="clean">
+    <delete dir="${dist}"/>
+    <delete dir="${doc}"/>
+    <delete dir="${lib}"/>
+  </target>
+
+</project>

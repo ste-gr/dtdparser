@@ -236,7 +236,7 @@ class Tokenize
 
         if (attr.defaultValue != null)
         {
-            System.out.print(attr.defaultValue);
+            System.out.print(" "+attr.defaultValue);
         }
 
         System.out.println();
