@@ -396,6 +396,12 @@ public class DTDParser implements EntityExpansion
     protected void parseMixed(DTDElement element)
         throws IOException
     {
+        // MAW Version 1.19
+        // Keep track of whether the mixed is #PCDATA only
+        // Don't allow * after (#PCDATA), but allow after
+        // (#PCDATA|foo|bar|baz)*
+        boolean isPcdataOnly = true;
+
         DTDMixed mixed = new DTDMixed();
 
         mixed.add(new DTDPCData());
@@ -414,11 +420,26 @@ public class DTDParser implements EntityExpansion
 
                 if (token.type == Scanner.ASTERISK)
                 {
+                    // MAW Ver. 1.19
+                    if (isPcdataOnly)
+                    {
+                        throw new DTDParseException(scanner.getUriId(),
+                                        "Invalid token in Mixed content type, '*' not allowed after (#PCDATA): "+
+                                        token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                    }
+
                     scanner.get();
                     mixed.cardinal = DTDCardinal.ZEROMANY;
                 }
                 else
                 {
+                    if (!isPcdataOnly)
+                    {
+                        throw new DTDParseException(scanner.getUriId(),
+                                        "Invalid token in Mixed content type, '*' required after (#PCDATA|xx ...): "+
+                                        token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                    }
+
                     mixed.cardinal = DTDCardinal.NONE;
                 }
 
@@ -429,6 +450,9 @@ public class DTDParser implements EntityExpansion
                 token = scanner.get();
 
                 mixed.add(new DTDName(token.value));
+
+                // MAW Ver. 1.19
+                isPcdataOnly = false;
             }
             else
             {
@@ -814,7 +838,13 @@ public class DTDParser implements EntityExpansion
 
         if (token.type == Scanner.STRING)
         {
-            entity.value = token.value;
+            // Only set the entity value if it hasn't been set yet
+            // XML 1.0 spec says that you use the first value of
+            // an entity, not the most recent.
+            if (entity.value == null)
+            {
+                entity.value = token.value;
+            }
         }
         else if (token.type == Scanner.IDENTIFIER)
         {

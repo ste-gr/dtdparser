@@ -71,6 +71,12 @@ public class DTDEntity implements DTDOutput
     public Reader getReader()
         throws IOException
     {
+        // MAW Ver 1.19 - Added check for externalID == null
+        if (externalID == null)
+        {
+            return null;
+        }
+
         Reader rd = getReader(externalID.system);
 
         return rd;

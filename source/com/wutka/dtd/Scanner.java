@@ -382,10 +382,15 @@ class Scanner
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
 
-				while (isIdentifierChar((char) peekChar()))
-				{
-					buff.append((char) read());
-				}
+                if (isIdentifierChar((char) peekChar()))
+                {
+                    buff.append((char) read());
+
+				    while (isNameChar((char) peekChar()))
+				    {
+					    buff.append((char) read());
+				    }
+                }
 				return new Token(IDENTIFIER, buff.toString());
 			}
 			else if ((ch == '&') || (ch == '%'))
@@ -400,10 +405,14 @@ class Scanner
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
 
-				while (isIdentifierChar((char) peekChar()))
-				{
-					buff.append((char) read());
-				}
+                if (isIdentifierChar((char) peekChar()))
+                {
+                    buff.append((char) read());
+				    while (isNameChar((char) peekChar()))
+				    {
+					    buff.append((char) read());
+				    }
+                }
 
 				if (read() != ';')
 				{
@@ -437,23 +446,23 @@ class Scanner
 			{
 				return new Token(COMMA);
 			}
-			else if (isLetter((char) ch))
-			{
-				StringBuffer buff = new StringBuffer();
-				buff.append((char) ch);
-
-				while (isIdentifierChar((char) peekChar()))
-				{
-					buff.append((char) read());
-				}
-				return new Token(IDENTIFIER, buff.toString());
-			}
 			else if (isIdentifierChar((char) ch))
 			{
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
 
-				while (isIdentifierChar((char) peekChar()))
+				while (isNameChar((char) peekChar()))
+				{
+					buff.append((char) read());
+				}
+				return new Token(IDENTIFIER, buff.toString());
+			}
+			else if (isNameChar((char) ch))
+			{
+				StringBuffer buff = new StringBuffer();
+				buff.append((char) ch);
+
+				while (isNameChar((char) peekChar()))
 				{
 					buff.append((char) read());
 				}
@@ -553,6 +562,16 @@ class Scanner
     public int getColumn() { return in.column; }
 
 	public boolean isIdentifierChar(char ch)
+	{
+		if (isLetter(ch) ||
+			(ch == '_') || (ch == ':'))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isNameChar(char ch)
 	{
 		if (isLetter(ch) || isDigit(ch) ||
 			(ch == '-') || (ch == '_') || (ch == '.') || (ch == ':')
