@@ -78,7 +78,7 @@ public class DTDParser implements EntityExpansion
 
                 Enumeration items = ((DTDContainer) element.content).
                     getItemsVec().  elements();
-                
+
                 while (items.hasMoreElements())
                 {
                     removeElements(roots, dtd, (DTDItem) items.nextElement());
@@ -145,7 +145,7 @@ public class DTDParser implements EntityExpansion
             }
             DTDProcessingInstruction instruct =
                 new DTDProcessingInstruction(textBuffer.toString());
-            
+
             dtd.items.addElement(instruct);
 
             return;
@@ -166,7 +166,7 @@ public class DTDParser implements EntityExpansion
                 }
                 else
                 {
-                    throw new DTDParseException(
+                    throw new DTDParseException(scanner.getUriId(),
                         "Invalid token in conditional: "+token.value,
                         scanner.getLineNumber(), scanner.getColumn());
                 }
@@ -229,15 +229,16 @@ public class DTDParser implements EntityExpansion
         {
             if (token.value == null)
             {
-                throw new DTDParseException("Expected "+expected.name+
-                    " instead of "+token.type.name,
-                    scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                            "Expected "+expected.name+" instead of "+token.type.name,
+                            scanner.getLineNumber(), scanner.getColumn());
             }
             else
             {
-                throw new DTDParseException("Expected "+expected.name+
-                    " instead of "+ token.type.name+"("+token.value+")",
-                    scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                            "Expected "+expected.name+
+                                " instead of "+ token.type.name+"("+token.value+")",
+                            scanner.getLineNumber(), scanner.getColumn());
             }
         }
 
@@ -280,7 +281,7 @@ public class DTDParser implements EntityExpansion
             }
             else
             {
-                throw new DTDParseException(
+                throw new DTDParseException(scanner.getUriId(),
                     "Invalid token in entity content spec "+
                         token.value,
                         scanner.getLineNumber(), scanner.getColumn());
@@ -326,7 +327,7 @@ public class DTDParser implements EntityExpansion
             if (token.type == Scanner.RPAREN)
             {
                 token = scanner.peek();
-                
+
                 if (token.type == Scanner.ASTERISK)
                 {
                     scanner.get();
@@ -347,8 +348,9 @@ public class DTDParser implements EntityExpansion
             }
             else
             {
-                throw new DTDParseException("Invalid token in Mixed content type: "+
-                    token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                                "Invalid token in Mixed content type: "+
+                                token.type.name, scanner.getLineNumber(), scanner.getColumn());
             }
         }
     }
@@ -400,7 +402,7 @@ public class DTDParser implements EntityExpansion
             {
                 if ((separator != null) && (separator != token.type))
                 {
-                    throw new DTDParseException(
+                    throw new DTDParseException(scanner.getUriId(),
                         "Can't mix separators in a choice/sequence",
                         scanner.getLineNumber(), scanner.getColumn());
                 }
@@ -430,7 +432,8 @@ public class DTDParser implements EntityExpansion
             }
             else
             {
-                throw new DTDParseException("Found invalid token in sequence: "+
+                throw new DTDParseException(scanner.getUriId(),
+                                "Found invalid token in sequence: "+
                     token.type.name, scanner.getLineNumber(), scanner.getColumn());
             }
         }
@@ -453,8 +456,10 @@ public class DTDParser implements EntityExpansion
         }
         else
         {
-            throw new DTDParseException("Found invalid token in sequence: "+
-                token.type.name, scanner.getLineNumber(), scanner.getColumn());
+            throw new DTDParseException(scanner.getUriId(),
+                            "Found invalid token in sequence: "+
+                            token.type.name, scanner.getLineNumber(),
+                            scanner.getColumn());
         }
 
         item.cardinal = parseCardinality();
@@ -465,7 +470,7 @@ public class DTDParser implements EntityExpansion
     protected DTDCardinal parseCardinality()
         throws IOException
     {
-        Token token = scanner.peek();           
+        Token token = scanner.peek();
 
         if (token.type == Scanner.QUES)
         {
@@ -566,7 +571,7 @@ public class DTDParser implements EntityExpansion
             }
             else
             {
-                throw new DTDParseException(
+                throw new DTDParseException(scanner.getUriId(),
                     "Invalid token in attribute declaration: "+
                     token.value, scanner.getLineNumber(), scanner.getColumn());
             }
@@ -590,8 +595,10 @@ public class DTDParser implements EntityExpansion
 
             if (token.type != Scanner.IDENTIFIER)
             {
-                throw new DTDParseException("Invalid token in notation: "+
-                    token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                                "Invalid token in notation: "+
+                                token.type.name, scanner.getLineNumber(),
+                                scanner.getColumn());
             }
 
             notation.add(token.value);
@@ -605,8 +612,10 @@ public class DTDParser implements EntityExpansion
             }
             else if (token.type != Scanner.PIPE)
             {
-                throw new DTDParseException("Invalid token in notation: "+
-                    token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                                "Invalid token in notation: "+
+                                token.type.name, scanner.getLineNumber(),
+                                scanner.getColumn());
             }
             scanner.get(); // eat the pipe
         }
@@ -624,8 +633,10 @@ public class DTDParser implements EntityExpansion
             if ((token.type != Scanner.IDENTIFIER) &&
                 (token.type != Scanner.NMTOKEN))
             {
-                throw new DTDParseException("Invalid token in enumeration: "+
-                    token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                                "Invalid token in enumeration: "+
+                                token.type.name, scanner.getLineNumber(),
+                                scanner.getColumn());
             }
 
             enumeration.add(token.value);
@@ -639,8 +650,10 @@ public class DTDParser implements EntityExpansion
             }
             else if (token.type != Scanner.PIPE)
             {
-                throw new DTDParseException("Invalid token in enumeration: "+
-                    token.type.name, scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                                "Invalid token in enumeration: "+
+                                token.type.name, scanner.getLineNumber(),
+                                scanner.getColumn());
             }
             scanner.get(); // eat the pipe
         }
@@ -660,8 +673,9 @@ public class DTDParser implements EntityExpansion
         }
         else if (name.type != Scanner.IDENTIFIER)
         {
-            throw new DTDParseException("Invalid entity declaration",
-                scanner.getLineNumber(), scanner.getColumn());
+            throw new DTDParseException(scanner.getUriId(),
+                            "Invalid entity declaration",
+                            scanner.getLineNumber(), scanner.getColumn());
         }
 
         DTDEntity entity = (DTDEntity) dtd.entities.get(name.value);
@@ -715,8 +729,9 @@ public class DTDParser implements EntityExpansion
             }
             else
             {
-                throw new DTDParseException("Invalid External ID specification",
-                    scanner.getLineNumber(), scanner.getColumn());
+                throw new DTDParseException(scanner.getUriId(),
+                                "Invalid External ID specification",
+                                scanner.getLineNumber(), scanner.getColumn());
             }
 
             if (entity.isParsed)
@@ -726,7 +741,7 @@ public class DTDParser implements EntityExpansion
                 {
                     if (!token.value.equals("NDATA"))
                     {
-                        throw new DTDParseException(
+                        throw new DTDParseException(scanner.getUriId(),
                             "Invalid NData declaration",
                             scanner.getLineNumber(), scanner.getColumn());
                     }
@@ -737,8 +752,9 @@ public class DTDParser implements EntityExpansion
         }
         else
         {
-            throw new DTDParseException("Invalid entity definition",
-                scanner.getLineNumber(), scanner.getColumn());
+            throw new DTDParseException(scanner.getUriId(),
+                            "Invalid entity definition",
+                            scanner.getLineNumber(), scanner.getColumn());
         }
 
         expect(Scanner.GT);

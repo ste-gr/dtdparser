@@ -56,6 +56,11 @@ public class DTDEntity implements DTDOutput
         out.println(">");
     }
 
+    public String getExternalId()
+    {
+        return(externalID.system);
+    }
+
     public Reader getReader()
         throws IOException
     {

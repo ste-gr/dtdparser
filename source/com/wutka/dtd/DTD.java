@@ -97,4 +97,24 @@ public class DTD implements DTDOutput
     {
         return items.elementAt(i);
     }
+
+/** Retrieves a list of items of a particular type */
+    public Vector getItemsByType(Class itemType)
+    {
+        Vector results = new Vector();
+
+        Enumeration e = items.elements();
+
+        while (e.hasMoreElements())
+        {
+            Object ob = e.nextElement();
+
+            if (itemType.isAssignableFrom(ob.getClass()))
+            {
+                results.addElement(itemType);
+            }
+        }
+
+        return results;
+    }
 }

@@ -35,7 +35,21 @@ class Scanner
         new TokenType(19, "ENDCONDITIONAL");
     public static final TokenType NMTOKEN = new TokenType(20, "NMTOKEN");
 
-	protected Reader in;
+    protected class StreamInfo
+    {
+        String      id;
+        Reader      in;
+        int         lineNumber = 1;
+        int         column = 1;
+
+        StreamInfo(String id, Reader in)
+        {
+            this.id = id;
+            this.in = in;
+        }
+    };
+
+    protected StreamInfo in;
     protected Stack inputStreams;
 	protected Token nextToken;
 	protected int nextChar;
@@ -44,8 +58,6 @@ class Scanner
     protected char[] expandBuffer;
     protected int expandPos;
     protected Hashtable entityExpansion;
-    protected int lineNumber;
-    protected int column;
     protected EntityExpansion expander;
 
 	public Scanner(Reader inReader, EntityExpansion anExpander)
@@ -55,13 +67,11 @@ class Scanner
 
 	public Scanner(Reader inReader, boolean doTrace, EntityExpansion anExpander)
     {
-		in = inReader;
+        in = new StreamInfo("", inReader);
         atEOF = false;
         trace = doTrace;
         expandBuffer = null;
         entityExpansion = new Hashtable();
-        lineNumber=1;
-        column=1;
         expander = anExpander;
     }
 
@@ -93,14 +103,14 @@ class Scanner
     protected int readNextChar()
         throws IOException
     {
-        int ch = in.read();
+        int ch = in.in.read();
 
         if (ch < 0)
         {
             if ((inputStreams != null) && (!inputStreams.empty()))
             {
-                in.close();
-                in = (Reader) inputStreams.pop();
+                in.in.close();
+                in = (StreamInfo) inputStreams.pop();
                 return readNextChar();
             }
         }
@@ -118,11 +128,11 @@ class Scanner
 		if (nextChar == 0)
 		{
 			nextChar = readNextChar();
-            column++;
+            in.column++;
             if (nextChar == '\n')
             {
-                lineNumber++;
-                column=1;
+                in.lineNumber++;
+                in.column=1;
             }
 		}
 
@@ -160,7 +170,7 @@ class Scanner
         }
 		return retval;
 	}
-	
+
     public String getUntil(char stopChar)
         throws IOException
     {
@@ -224,7 +234,7 @@ class Scanner
 						read();
 						if (peekChar() != '-')
 						{
-							throw new DTDParseException(
+                            throw new DTDParseException(getUriId(),
 								"Invalid character sequence <!-"+read(),
                                 getLineNumber(), getColumn());
 						}
@@ -235,7 +245,7 @@ class Scanner
 						{
                             if (peekChar() < 0)
                             {
-                                throw new DTDParseException(
+                                throw new DTDParseException(getUriId(),
                                     "Unterminated comment: <!--"+
                                     buff.toString(),
                                     getLineNumber(), getColumn());
@@ -250,7 +260,7 @@ class Scanner
 								read();
                                 if (peekChar() < 0)
                                 {
-                                    throw new DTDParseException(
+                                    throw new DTDParseException(getUriId(),
                                         "Unterminated comment: <!--"+
                                         buff.toString(),
                                         getLineNumber(), getColumn());
@@ -260,7 +270,7 @@ class Scanner
 									read();
 									if (peekChar() != '>')
 									{
-										throw new DTDParseException(
+                                        throw new DTDParseException(getUriId(),
 											"Invalid character sequence --"+
 											read(), getLineNumber(), getColumn());
 									}
@@ -290,7 +300,7 @@ class Scanner
 // Need to treat ?> as two separate tokens because
 // <!ELEMENT blah (foo)?> needs the ? as a QUES, not QUESGT
 /*				ch = peekChar();
-	
+
 				if (ch == '>')
 				{
 					read();
@@ -350,13 +360,13 @@ class Scanner
             {
                 if (read() != ']')
                 {
-				    throw new DTDParseException(
+                    throw new DTDParseException(getUriId(),
                         "Illegal character in input stream: "+ch,
                         getLineNumber(), getColumn());
                 }
                 if (read() != '>')
                 {
-				    throw new DTDParseException(
+                    throw new DTDParseException(getUriId(),
                         "Illegal character in input stream: "+ch,
                         getLineNumber(), getColumn());
                 }
@@ -367,7 +377,7 @@ class Scanner
 			{
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
-	
+
 				while (isIdentifierChar((char) peekChar()))
 				{
 					buff.append((char) read());
@@ -385,7 +395,7 @@ class Scanner
 
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
-	
+
 				while (isIdentifierChar((char) peekChar()))
 				{
 					buff.append((char) read());
@@ -393,9 +403,10 @@ class Scanner
 
 				if (read() != ';')
 				{
-					throw new DTDParseException("Expected ';' after reference "+
-						buff.toString()+", found '"+ch+"'",
-                        getLineNumber(), getColumn());
+                    throw new DTDParseException(getUriId(),
+                                "Expected ';' after reference "+
+                                buff.toString()+", found '"+ch+"'",
+                                getLineNumber(), getColumn());
 				}
                 buff.append(';');
 
@@ -417,7 +428,7 @@ class Scanner
 			{
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
-	
+
 				while (isIdentifierChar((char) peekChar()))
 				{
 					buff.append((char) read());
@@ -428,7 +439,7 @@ class Scanner
 			{
 				StringBuffer buff = new StringBuffer();
 				buff.append((char) ch);
-	
+
 				while (isIdentifierChar((char) peekChar()))
 				{
 					buff.append((char) read());
@@ -450,7 +461,9 @@ class Scanner
 			}
 			else
 			{
-				throw new DTDParseException("Illegal character in input stream: "+ch, getLineNumber(), getColumn());
+                throw new DTDParseException(getUriId(),
+                                "Illegal character in input stream: "+ch,
+                                getLineNumber(), getColumn());
 			}
 		}
 	}
@@ -471,8 +484,9 @@ class Scanner
         }
     }
 
-    public int getLineNumber() { return lineNumber; }
-    public int getColumn() { return column; }
+    public String getUriId() { return(in.id); }
+    public int getLineNumber() { return in.lineNumber; }
+    public int getColumn() { return in.column; }
 
 	public boolean isIdentifierChar(char ch)
 	{
@@ -671,11 +685,11 @@ class Scanner
 
         entityName = entityName.substring(1, entityName.length()-1);
 
-System.out.println("Trying to expand: "+entityName);
+        //System.out.println("Trying to expand: "+entityName);
         DTDEntity realEntity = expander.expandEntity(entityName);
         if (realEntity != null)
         {
-            System.out.println("Expanded: "+entityName);
+            //System.out.println("Expanded: "+entityName);
             Reader entityIn = realEntity.getReader();
             if (entityIn != null)
             {
@@ -683,8 +697,9 @@ System.out.println("Trying to expand: "+entityName);
                 {
                     inputStreams = new Stack();
                 }
+
                 inputStreams.push(in);
-                in = entityIn;
+                in = new StreamInfo(realEntity.getExternalId(), entityIn);
 
                 return true;
             }
@@ -702,7 +717,7 @@ System.out.println("Trying to expand: "+entityName);
             char[] newExp = new char[oldCharsLeft + expandChars.length];
             System.arraycopy(expandChars, 0, newExp, 0,
                 expandChars.length);
-            System.arraycopy(expandBuffer, expandPos, newExp, 
+            System.arraycopy(expandBuffer, expandPos, newExp,
                 expandChars.length, oldCharsLeft);
             expandPos = 0;
             expandBuffer = newExp;
