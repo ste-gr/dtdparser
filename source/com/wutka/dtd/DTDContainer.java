@@ -1,5 +1,6 @@
 package com.wutka.dtd;
 
+import java.io.*;
 import java.util.*;
 
 /** Represents an item that may contain other items (such as a
@@ -43,4 +44,7 @@ public abstract class DTDContainer extends DTDItem
         items.copyInto(retval);
         return retval;
     }
+
+    public abstract void write(PrintWriter out)
+        throws IOException;
 }

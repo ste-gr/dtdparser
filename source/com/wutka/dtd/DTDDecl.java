@@ -1,5 +1,7 @@
 package com.wutka.dtd;
 
+import java.io.*;
+
 /** Represents the possible values for an attribute declaration
  *
  * @author Mark Wutka
@@ -29,5 +31,23 @@ public class DTDDecl
         DTDDecl other = (DTDDecl) ob;
         if (other.type == type) return true;
         return false;
+    }
+
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        if (this == FIXED)
+        {
+            out.print(" #FIXED");
+        }
+        else if (this == REQUIRED)
+        {
+            out.print(" #REQUIRED");
+        }
+        else if (this == IMPLIED)
+        {
+            out.print(" #IMPLIED");
+        }
+        // Don't do anything for value since there is no associated DTD keyword
     }
 }

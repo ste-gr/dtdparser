@@ -1,5 +1,7 @@
 package com.wutka.dtd;
 
+import java.io.*;
+
 /** Represents the various cardinality values for a DTD item.
  * <bl>
  * <li>NONE indicates no cardinality</li>
@@ -42,5 +44,24 @@ public class DTDCardinal
         DTDCardinal other = (DTDCardinal) ob;
         if (other.type == type) return true;
         return false;
+    }
+
+/** Writes the notation for this cardinality value */
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        if (this == NONE) return;
+        if (this == OPTIONAL)
+        {
+            out.print("?");
+        }
+        else if (this == ZEROMANY)
+        {
+            out.print("*");
+        }
+        else if (this == ONEMANY)
+        {
+            out.print("+");
+        }
     }
 }

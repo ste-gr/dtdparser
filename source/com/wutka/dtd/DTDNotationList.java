@@ -1,6 +1,7 @@
 package com.wutka.dtd;
 
 import java.util.*;
+import java.io.*;
 
 /** Represents a notation declaration for an attribute
  *
@@ -42,5 +43,23 @@ public class DTDNotationList
     public Vector getItemsVec()
     {
         return items;
+    }
+
+/** Writes a declaration for this notation */
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        out.print("NOTATION ( ");
+        Enumeration e = getItemsVec().elements();
+
+        boolean isFirst = true;
+
+        while (e.hasMoreElements())
+        {
+            if (!isFirst) out.print(" | ");
+            isFirst = false;
+            out.print(e.nextElement());
+        }
+        out.print(")");
     }
 }

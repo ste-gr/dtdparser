@@ -1,5 +1,7 @@
 package com.wutka.dtd;
 
+import java.io.*;
+
 /** Represents the EMPTY keyword in an Element's content spec
  *
  * @author Mark Wutka
@@ -9,5 +11,13 @@ public class DTDEmpty extends DTDItem
 {
     public DTDEmpty()
     {
+    }
+
+/** Writes out the keyword "EMPTY" */
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        out.println(" EMPTY");
+        cardinal.write(out);
     }
 }

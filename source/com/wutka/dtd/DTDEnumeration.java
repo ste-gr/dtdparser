@@ -1,6 +1,7 @@
 package com.wutka.dtd;
 
 import java.util.*;
+import java.io.*;
 
 /** Represents an enumeration of attribute values
  *
@@ -42,5 +43,23 @@ public class DTDEnumeration
     public Vector getItemsVec()
     {
         return items;
+    }
+
+/** Writes out a declaration for this enumeration */
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        out.print("( ");
+        Enumeration e = getItemsVec().elements();
+
+        boolean isFirst = true;
+        while (e.hasMoreElements())
+        {
+            if (!isFirst) out.print(" | ");
+            isFirst = false;
+
+            out.print(e.nextElement());
+        }
+        out.print(")");
     }
 }

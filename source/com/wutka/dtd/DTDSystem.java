@@ -1,5 +1,7 @@
 package com.wutka.dtd;
 
+import java.io.*;
+
 /** Represents an external System ID in an entity declaration
  *
  * @author Mark Wutka
@@ -10,5 +12,16 @@ public class DTDSystem extends DTDExternalID
 {
     public DTDSystem()
     {
+    }
+
+/** Writes out a declaration for this SYSTEM ID */
+    public void write(PrintWriter out)
+    {
+        if (system != null)
+        {
+            out.print("SYSTEM \"");
+            out.print(system);
+            out.print("\"");
+        }
     }
 }

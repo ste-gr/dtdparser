@@ -1,5 +1,8 @@
 package com.wutka.dtd;
 
+import java.io.*;
+import java.util.*;
+
 /** Represents a choice of items.
  * A choice in a DTD looks like (option1 | option2 | option3)
  *
@@ -10,5 +13,26 @@ public class DTDChoice extends DTDContainer
 {
     public DTDChoice()
     {
+    }
+
+/** Writes out the possible choices to a PrintWriter */
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        out.print("(");
+        Enumeration e = getItemsVec().elements();
+        boolean isFirst = true;
+
+        while (e.hasMoreElements())
+        {
+            if (!isFirst) out.print(" | ");
+            isFirst = false;
+
+            DTDItem item = (DTDItem) e.nextElement();
+
+            item.write(out);
+        }
+        out.print(")");
+        cardinal.write(out);
     }
 }

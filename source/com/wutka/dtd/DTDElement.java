@@ -1,6 +1,7 @@
 package com.wutka.dtd;
 
 import java.util.*;
+import java.io.*;
 
 /** Represents an element defined with the ELEMENT DTD tag
  *
@@ -28,5 +29,42 @@ public class DTDElement
         name = aName;
 
         attributes = new Hashtable();
+    }
+
+/** Writes out an element declaration and an attlist declaration (if necessary)
+    for this element */
+    public void write(PrintWriter out)
+        throws IOException
+    {
+        out.print("<!ELEMENT ");
+        out.print(name);
+        out.print(" ");
+        if (content != null)
+        {
+            content.write(out);
+        }
+        else
+        {
+            out.print("ANY");
+        }
+        out.println(">");
+        out.println();
+
+        if (attributes.size() > 0)
+        {
+            out.print("<!ATTLIST ");
+            out.println(name);
+
+            Enumeration e = attributes.elements();
+
+            while (e.hasMoreElements())
+            {
+                out.print("           ");
+                DTDAttribute attr = (DTDAttribute) e.nextElement();
+                attr.write(out);
+                out.println();
+            }
+            out.println();
+        }
     }
 }

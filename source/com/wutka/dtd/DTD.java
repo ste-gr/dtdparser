@@ -1,6 +1,7 @@
 package com.wutka.dtd;
 
 import java.util.*;
+import java.io.*;
 
 /** Represents a parsed Document Type Definition
  *
@@ -30,5 +31,22 @@ public class DTD
         elements = new Hashtable();
         entities = new Hashtable();
         notations = new Hashtable();
+    }
+
+/** Writes the DTD to an output writer in standard DTD format (the format
+ *  the parser normally reads).
+ *  @param outWriter The writer where the DTD will be written
+ */
+    public void write(PrintWriter outWriter)
+        throws IOException
+    {
+        Enumeration e = elements.elements();
+
+        while (e.hasMoreElements())
+        {
+            DTDElement element = (DTDElement) e.nextElement();
+
+            element.write(outWriter);
+        }
     }
 }
