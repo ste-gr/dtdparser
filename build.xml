@@ -47,7 +47,7 @@
   </target>
 
   <target name="makejar">
-    <jar jarfile="${prod.jar}" whenempty="skip" manifest="main">
+    <jar jarfile="${prod.jar}" whenempty="skip" manifest="${lib}/mainclass">
       <fileset dir="${lib}" includes="com/"/>
     </jar>
     <copy file="${prod.jar}" todir="${dist}"/>
