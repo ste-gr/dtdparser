@@ -20,6 +20,11 @@ public class DTDComment implements DTDOutput
     {
         text = theText;
     }
+    
+    public String toString()
+    {
+	    return text;
+    }
 
     public void write(PrintWriter out)
         throws IOException
