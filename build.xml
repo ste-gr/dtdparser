@@ -65,23 +65,22 @@
              doctitle="&lt;h1&gt;DTDParser API&lt;/h1&gt;"
              bottom="&lt;i&gt;Copyright &#169; 2001 Mark Wutka.&lt;/i&gt;">
       <link href="http://java.sun.com/j2se/1.3/docs/api/"/>
-    </javadoc>    
+    </javadoc>
   </target>
 
   <target name="dist" depends="build,createdoc">
-    <exec executable="cvs">
+    <exec executable="cvs" dir="${dist}">
       <arg line="-q export -D now -d ${prod.distbase} ${prod.name}"/>
     </exec>
     <tar tarfile="${dist}/${prod.distbase}.tar"
-         basedir="${prod.distbase}"/>
+         basedir="${dist}" includes="${prod.distbase}/**/*"/>
     <gzip zipfile="${dist}/${prod.distbase}.tgz"
           src="${dist}/${prod.distbase}.tar"/>
     <zip zipfile="${dist}/${prod.distbase}.zip"
-         basedir="${prod.distbase}"/>
+         basedir="${dist}" includes="${prod.distbase}/**/*"/>
     <delete file="${dist}/${prod.distbase}.tar"/>
-    <delete dir="${prod.distbase}"/>
+    <delete dir="${dist}/${prod.distbase}"/>
   </target>
-
 
   <!--
     ============================================================
