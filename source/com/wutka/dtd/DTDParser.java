@@ -2,6 +2,7 @@ package com.wutka.dtd;
 
 import java.util.*;
 import java.io.*;
+import java.net.*;
 
 /** Parses a DTD file and returns a DTD object
  *
@@ -12,6 +13,7 @@ public class DTDParser implements EntityExpansion
 {
     protected Scanner scanner;
     protected DTD dtd;
+    protected Object defaultLocation;
 
 /** Creates a parser that will read from the specified Reader object */
     public DTDParser(Reader in)
@@ -28,6 +30,58 @@ public class DTDParser implements EntityExpansion
     public DTDParser(Reader in, boolean trace)
     {
         scanner = new Scanner(in, trace, this);
+        dtd = new DTD();
+    }
+
+/** Creates a parser that will read from the specified File object */
+    public DTDParser(File in)
+        throws IOException
+    {
+        defaultLocation = in.getParentFile();
+
+        scanner = new Scanner(new BufferedReader(new FileReader(in)),
+            false, this);
+        dtd = new DTD();
+    }
+
+/** Creates a parser that will read from the specified File object
+ * @param in The file to read
+ * @param trace True if the parser should print out tokens as it reads them
+ *  (used for debugging the parser)
+ */
+    public DTDParser(File in, boolean trace)
+        throws IOException
+    {
+        defaultLocation = in.getParentFile();
+
+        scanner = new Scanner(new BufferedReader(new FileReader(in)),
+            trace, this);
+        dtd = new DTD();
+    }
+
+/** Creates a parser that will read from the specified URL object */
+    public DTDParser(URL in)
+        throws IOException
+    {
+        defaultLocation = in;
+
+        scanner = new Scanner(new BufferedReader(
+            new InputStreamReader(in.openStream())), false, this);
+        dtd = new DTD();
+    }
+
+/** Creates a parser that will read from the specified URL object
+ * @param in The URL to read
+ * @param trace True if the parser should print out tokens as it reads them
+ *  (used for debugging the parser)
+ */
+    public DTDParser(URL in, boolean trace)
+        throws IOException
+    {
+        defaultLocation = in;
+
+        scanner = new Scanner(new BufferedReader(
+            new InputStreamReader(in.openStream())), trace, this);
         dtd = new DTD();
     }
 
@@ -682,7 +736,7 @@ public class DTDParser implements EntityExpansion
 
         if (entity == null)
         {
-            entity = new DTDEntity(name.value);
+            entity = new DTDEntity(name.value, defaultLocation);
             dtd.entities.put(entity.name, entity);
         }
 

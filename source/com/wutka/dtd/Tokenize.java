@@ -15,9 +15,7 @@ class Tokenize
 	{
 		try
 		{
-			FileReader reader = new FileReader(args[0]);
-
-            DTDParser parser = new DTDParser(new BufferedReader(reader), true);
+            DTDParser parser = new DTDParser(new File(args[0]), true);
 
 // Parse the DTD and ask the parser to guess the root element 
             DTD dtd = parser.parse(true);

@@ -15,6 +15,7 @@ public class DTDEntity implements DTDOutput
     public String value;
     public DTDExternalID externalID;
     public String ndata;
+    public Object defaultLocation;
 
     public DTDEntity()
     {
@@ -23,6 +24,12 @@ public class DTDEntity implements DTDOutput
     public DTDEntity(String aName)
     {
         name = aName;
+    }
+
+    public DTDEntity(String aName, Object aDefaultLocation)
+    {
+        name = aName;
+        defaultLocation = aDefaultLocation;
     }
 
 /** Writes out an entity declaration for this entity */
@@ -73,6 +80,27 @@ public class DTDEntity implements DTDOutput
     {
         try
         {
+            if (defaultLocation != null)
+            {
+                if (defaultLocation instanceof File)
+                {
+                    File loc = (File) defaultLocation;
+
+                    BufferedReader in = new BufferedReader(
+                        new FileReader(new File(loc, entityName)));
+
+                    return in;
+                }
+                else if (defaultLocation instanceof URL)
+                {
+                    URL url = (URL) defaultLocation;
+
+                    BufferedReader in = new BufferedReader(
+                        new InputStreamReader(url.openStream()));
+
+                    return in;
+                }
+            }
             BufferedReader in = new BufferedReader(
                 new FileReader(entityName));
 
