@@ -420,14 +420,6 @@ public class DTDParser implements EntityExpansion
 
                 if (token.type == Scanner.ASTERISK)
                 {
-                    // MAW Ver. 1.19
-                    if (isPcdataOnly)
-                    {
-                        throw new DTDParseException(scanner.getUriId(),
-                                        "Invalid token in Mixed content type, '*' not allowed after (#PCDATA): "+
-                                        token.type.name, scanner.getLineNumber(), scanner.getColumn());
-                    }
-
                     scanner.get();
                     mixed.cardinal = DTDCardinal.ZEROMANY;
                 }
