@@ -749,7 +749,7 @@ class Scanner
 
         entityName = entityName.substring(1, entityName.length()-1);
 
-        System.out.println("Trying to expand: "+entityName);
+        //System.out.println("Trying to expand: "+entityName);
         DTDEntity realEntity = expander.expandEntity(entityName);
         if (realEntity != null)
         {
