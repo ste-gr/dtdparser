@@ -414,9 +414,18 @@ class Scanner
 				}
                 buff.append(';');
 
-                if (peRef && expandEntity(buff.toString()))
+                if (peRef)
                 {
-                    continue;
+                    if (expandEntity(buff.toString()))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        // MAW: Added version 1.17
+                        // If the entity can't be expanded, don't return it, skip it
+                        continue;
+                    }
                 }
 				return new Token(IDENTIFIER, buff.toString());
 			}
@@ -740,7 +749,7 @@ class Scanner
 
         entityName = entityName.substring(1, entityName.length()-1);
 
-        //System.out.println("Trying to expand: "+entityName);
+        System.out.println("Trying to expand: "+entityName);
         DTDEntity realEntity = expander.expandEntity(entityName);
         if (realEntity != null)
         {

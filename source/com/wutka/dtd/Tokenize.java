@@ -2,6 +2,7 @@ package com.wutka.dtd;
 
 import java.io.*;
 import java.util.*;
+import java.net.URL;
 
 /** Example program to read a DTD and print out its object model
  *
@@ -15,9 +16,19 @@ class Tokenize
 	{
 		try
 		{
-            DTDParser parser = new DTDParser(new File(args[0]), true);
+            DTDParser parser = null;
+// MAW Version 1.17
+// If it looks like the filename may be a URL, use the URL class
+            if (args[0].indexOf("://") > 0)
+            {
+                parser = new DTDParser(new URL(args[0]), true);
+            }
+            else
+            {
+                parser = new DTDParser(new File(args[0]), true);
+            }
 
-// Parse the DTD and ask the parser to guess the root element 
+// Parse the DTD and ask the parser to guess the root element
             DTD dtd = parser.parse(true);
 
             if (dtd.rootElement != null)

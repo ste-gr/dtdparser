@@ -270,6 +270,16 @@ public class DTDParser implements EntityExpansion
                 skipUntil(Scanner.GT);
             }
         }
+        else
+        {
+// MAW Version 1.17
+// Previously, the parser would skip over unexpected tokens at the
+// upper level. Some invalid DTDs would still show up as valid.
+            throw new DTDParseException(scanner.getUriId(),
+                        "Unexpected token: "+ token.type.name+"("+token.value+")",
+                        scanner.getLineNumber(), scanner.getColumn());
+        }
+
     }
 
     protected void skipUntil(TokenType stopToken)
@@ -591,6 +601,12 @@ public class DTDParser implements EntityExpansion
             parseAttdef(scanner, element, attlist);
             token = scanner.peek();
         }
+// MAW Version 1.17
+// Prior to this version, the parser didn't actually consume the > at the
+// end of the ATTLIST definition. Because the parser ignored unexpected tokens
+// at the top level, it was ignoring the >. In parsing DOCBOOK, however, there
+// were two unexpected tokens, bringing this error to light.
+        expect(Scanner.GT);
     }
 
     protected void parseAttdef(Scanner scanner, DTDElement element,

@@ -93,7 +93,13 @@ public class DTDEntity implements DTDOutput
                 }
                 else if (defaultLocation instanceof URL)
                 {
-                    URL url = (URL) defaultLocation;
+                    // MAW Version 1.17
+                    // Changed to construct new URL based on default
+                    // location plus the entity name just like is done
+                    // with the File-based name. This allows parsing of
+                    // a URL-based DTD file that references other files either
+                    // relatively or absolutely.
+                    URL url = new URL((URL) defaultLocation, entityName);
 
                     BufferedReader in = new BufferedReader(
                         new InputStreamReader(url.openStream()));
