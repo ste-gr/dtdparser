@@ -31,7 +31,20 @@ public class DTDParser
         dtd = new DTD();
     }
 
+/** Parses the DTD file and returns a DTD object describing the DTD.
+    This invocation of parse does not try to guess the root element
+    (for efficiency reasons) */
     public DTD parse()
+        throws IOException
+    {
+        return parse(false);
+    }
+
+/** Parses the DTD file and returns a DTD object describing the DTD.
+ * @param guessRootElement If true, tells the parser to try to guess the
+          root element of the document by process of elimination
+ */
+    public DTD parse(boolean guessRootElement)
         throws IOException
     {
         Token token;
@@ -45,7 +58,66 @@ public class DTDParser
             parseTopLevelElement();
         }
 
+        if (guessRootElement)
+        {
+            Hashtable roots = new Hashtable();
+
+            Enumeration e = dtd.elements.elements();
+
+            while (e.hasMoreElements())
+            {
+                DTDElement element = (DTDElement) e.nextElement();
+                roots.put(element.name, element);
+            }
+
+            e = dtd.elements.elements();
+            while (e.hasMoreElements())
+            {
+                DTDElement element = (DTDElement) e.nextElement();
+                if (!(element.content instanceof DTDContainer)) continue;
+
+                Enumeration items = ((DTDContainer) element.content).
+                    getItemsVec().  elements();
+                
+                while (items.hasMoreElements())
+                {
+                    removeElements(roots, dtd, (DTDItem) items.nextElement());
+                }
+            }
+
+            if (roots.size() == 1)
+            {
+                e = roots.elements();
+                dtd.rootElement = (DTDElement) e.nextElement();
+            }
+            else
+            {
+                dtd.rootElement = null;
+            }
+        }
+        else
+        {
+            dtd.rootElement = null;
+        }
+
         return dtd;
+    }
+
+    protected void removeElements(Hashtable h, DTD dtd, DTDItem item)
+    {
+        if (item instanceof DTDName)
+        {
+            h.remove(((DTDName) item).value);
+        }
+        else if (item instanceof DTDContainer)
+        {
+            Enumeration e = ((DTDContainer) item).getItemsVec().elements();
+
+            while (e.hasMoreElements())
+            {
+                removeElements(h, dtd, (DTDItem) e.nextElement());
+            }
+        }
     }
 
     protected void parseTopLevelElement()

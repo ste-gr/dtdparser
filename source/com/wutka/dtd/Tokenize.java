@@ -19,7 +19,14 @@ class Tokenize
 
             DTDParser parser = new DTDParser(new BufferedReader(reader), true);
 
-            DTD dtd = parser.parse();
+// Parse the DTD and ask the parser to guess the root element 
+            DTD dtd = parser.parse(true);
+
+            if (dtd.rootElement != null)
+            {
+                System.out.println("Root element is probably: "+
+                    dtd.rootElement.name);
+            }
 
             Enumeration e = dtd.elements.elements();
 

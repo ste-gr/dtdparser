@@ -20,6 +20,10 @@ public class DTD
 /** Contains all the notations defined in the DTD */
     public Hashtable notations;
 
+/** Contains the element that is most likely the root element  or null
+    if the root element can't be determined.  */
+    public DTDElement rootElement;
+
 /** Creates a new DTD */
     public DTD()
     {
