@@ -43,12 +43,16 @@ class Scanner
     protected char[] expandBuffer;
     protected int expandPos;
     protected Hashtable entityExpansion;
+    protected int lineNumber;
+    protected int column;
 
 	public Scanner(Reader inReader)
 	{
         this(inReader, false);
         expandBuffer = null;
         entityExpansion = new Hashtable();
+        lineNumber=1;
+        column=1;
 	}
 
 	public Scanner(Reader inReader, boolean doTrace)
@@ -58,6 +62,8 @@ class Scanner
         trace = doTrace;
         expandBuffer = null;
         entityExpansion = new Hashtable();
+        lineNumber=1;
+        column=1;
     }
 
 	public Token peek()
@@ -96,6 +102,12 @@ class Scanner
 		if (nextChar == 0)
 		{
 			nextChar = in.read();
+            column++;
+            if (nextChar == '\n')
+            {
+                lineNumber++;
+                column=1;
+            }
 		}
 
 		return nextChar;
@@ -181,8 +193,9 @@ class Scanner
 						read();
 						if (peekChar() != '-')
 						{
-							throw new IOException(
-								"Invalid character sequence <!-"+read());
+							throw new DTDParseException(
+								"Invalid character sequence <!-"+read(),
+                                getLineNumber(), getColumn());
 						}
 						read();
 
@@ -191,9 +204,10 @@ class Scanner
 						{
                             if (peekChar() < 0)
                             {
-                                throw new IOException(
+                                throw new DTDParseException(
                                     "Unterminated comment: <!--"+
-                                    buff.toString());
+                                    buff.toString(),
+                                    getLineNumber(), getColumn());
                             }
 
 							if (peekChar() != '-')
@@ -205,18 +219,19 @@ class Scanner
 								read();
                                 if (peekChar() < 0)
                                 {
-                                    throw new IOException(
+                                    throw new DTDParseException(
                                         "Unterminated comment: <!--"+
-                                        buff.toString());
+                                        buff.toString(),
+                                        getLineNumber(), getColumn());
                                 }
 								if (peekChar() == '-')
 								{
 									read();
 									if (peekChar() != '>')
 									{
-										throw new IOException(
+										throw new DTDParseException(
 											"Invalid character sequence --"+
-											read());
+											read(), getLineNumber(), getColumn());
 									}
 									read();
 									return new Token(COMMENT, buff.toString());
@@ -304,13 +319,15 @@ class Scanner
             {
                 if (read() != ']')
                 {
-				    throw new IOException(
-                        "Illegal character in input stream: "+ch);
+				    throw new DTDParseException(
+                        "Illegal character in input stream: "+ch,
+                        getLineNumber(), getColumn());
                 }
                 if (read() != '>')
                 {
-				    throw new IOException(
-                        "Illegal character in input stream: "+ch);
+				    throw new DTDParseException(
+                        "Illegal character in input stream: "+ch,
+                        getLineNumber(), getColumn());
                 }
 
                 return new Token(ENDCONDITIONAL);
@@ -345,8 +362,9 @@ class Scanner
 
 				if (read() != ';')
 				{
-					throw new IOException("Expected ';' after reference "+
-						buff.toString()+", found '"+ch+"'");
+					throw new DTDParseException("Expected ';' after reference "+
+						buff.toString()+", found '"+ch+"'",
+                        getLineNumber(), getColumn());
 				}
                 buff.append(';');
 
@@ -401,7 +419,7 @@ class Scanner
 			}
 			else
 			{
-				throw new IOException("Illegal character in input stream: "+ch);
+				throw new DTDParseException("Illegal character in input stream: "+ch, getLineNumber(), getColumn());
 			}
 		}
 	}
@@ -421,6 +439,9 @@ class Scanner
             break;
         }
     }
+
+    public int getLineNumber() { return lineNumber; }
+    public int getColumn() { return column; }
 
 	public boolean isIdentifierChar(char ch)
 	{
