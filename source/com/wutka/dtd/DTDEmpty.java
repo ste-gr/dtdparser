@@ -17,7 +17,7 @@ public class DTDEmpty extends DTDItem
     public void write(PrintWriter out)
         throws IOException
     {
-        out.println(" EMPTY");
+        out.print("EMPTY");
         cardinal.write(out);
     }
 }
