@@ -63,6 +63,6 @@ public class DTDAttribute
             out.print(defaultValue);
             out.print("\"");
         }
-        out.println(">");
+        //out.println(">");                            Bug!
     }
 }

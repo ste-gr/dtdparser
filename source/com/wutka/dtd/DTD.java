@@ -40,13 +40,10 @@ public class DTD
     public void write(PrintWriter outWriter)
         throws IOException
     {
-        Enumeration e = elements.elements();
-
-        while (e.hasMoreElements())
-        {
-            DTDElement element = (DTDElement) e.nextElement();
-
-            element.write(outWriter);
-        }
+		TreeMap tm=new TreeMap(elements);
+		Collection values=tm.values();
+		Iterator iterator=values.iterator();
+		while (iterator.hasNext())
+			((DTDElement)iterator.next()).write(outWriter);
     }
 }

@@ -54,17 +54,19 @@ public class DTDElement
         {
             out.print("<!ATTLIST ");
             out.println(name);
-
-            Enumeration e = attributes.elements();
-
-            while (e.hasMoreElements())
-            {
+	    TreeMap tm=new TreeMap(attributes);
+	    Collection values=tm.values();
+	    Iterator iterator=values.iterator();
+	    while (iterator.hasNext())
+	    {
                 out.print("           ");
-                DTDAttribute attr = (DTDAttribute) e.nextElement();
+                DTDAttribute attr = (DTDAttribute) iterator.next();
                 attr.write(out);
-                out.println();
-            }
-            out.println();
+		if (iterator.hasNext())
+                	out.println();
+		else
+	                out.println(">");
+	    }
         }
     }
 }
