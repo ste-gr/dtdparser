@@ -8,7 +8,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDParser
+public class DTDParser implements EntityExpansion
 {
     protected Scanner scanner;
     protected DTD dtd;
@@ -16,7 +16,7 @@ public class DTDParser
 /** Creates a parser that will read from the specified Reader object */
     public DTDParser(Reader in)
     {
-        scanner = new Scanner(in, false);
+        scanner = new Scanner(in, false, this);
         dtd = new DTD();
     }
 
@@ -27,7 +27,7 @@ public class DTDParser
  */
     public DTDParser(Reader in, boolean trace)
     {
-        scanner = new Scanner(in, trace);
+        scanner = new Scanner(in, trace, this);
         dtd = new DTD();
     }
 
@@ -158,11 +158,18 @@ public class DTDParser
             {
                 scanner.skipConditional();
             }
-            else if (!token.value.equals("INCLUDE"))
+            else
             {
-                throw new DTDParseException(
-                    "Invalid token in conditional: "+token.value,
-                    scanner.getLineNumber(), scanner.getColumn());
+                if (token.value.equals("INCLUDE"))
+                {
+                    scanner.skipUntil('[');
+                }
+                else
+                {
+                    throw new DTDParseException(
+                        "Invalid token in conditional: "+token.value,
+                        scanner.getLineNumber(), scanner.getColumn());
+                }
             }
         }
         else if (token.type == Scanner.ENDCONDITIONAL)
@@ -704,6 +711,7 @@ public class DTDParser
                 pub.pub = token.value;
                 token = expect(Scanner.STRING);
                 pub.system = token.value;
+                entity.externalID = pub;
             }
             else
             {
@@ -778,5 +786,10 @@ public class DTDParser
             notation.externalID = pub;
         }
         expect(Scanner.GT);
+    }
+
+    public DTDEntity expandEntity(String name)
+    {
+        return (DTDEntity) dtd.entities.get(name);
     }
 }

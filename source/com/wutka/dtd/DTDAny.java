@@ -20,4 +20,12 @@ public class DTDAny extends DTDItem
         out.print("ANY");
         cardinal.write(out);
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDAny)) return false;
+
+        return super.equals(ob);
+    }
 }

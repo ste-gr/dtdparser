@@ -21,6 +21,9 @@ public class DTD implements DTDOutput
 /** Contains all the notations defined in the DTD */
     public Hashtable notations;
 
+/** Contains parsed DTD's for any external entity DTD declarations */
+    public Hashtable externalDTDs;
+
 /** Contains all the items defined in the DTD in their original order */
     public Vector items;
 
@@ -34,6 +37,7 @@ public class DTD implements DTDOutput
         elements = new Hashtable();
         entities = new Hashtable();
         notations = new Hashtable();
+        externalDTDs = new Hashtable();
         items = new Vector();
     }
 
@@ -52,5 +56,45 @@ public class DTD implements DTDOutput
 
             item.write(outWriter);
         }
+    }
+
+/** Returns true if this object is equal to another */
+    public boolean equals(Object ob)
+    {
+        if (this == ob) return true;
+
+        if (!(ob instanceof DTD)) return false;
+
+        DTD otherDTD = (DTD) ob;
+
+        return items.equals(otherDTD.items);
+    }
+
+/** Stores an array of items in the items array */
+    public void setItems(Object[] newItems)
+    {
+        items = new Vector(newItems.length);
+        for (int i=0; i < newItems.length; i++)
+        {
+            items.addElement(newItems[i]);
+        }
+    }
+
+/** Returns the items as an array */
+    public Object[] getItems()
+    {
+        return items.toArray();
+    }
+
+/** Stores an item in the items array */
+    public void setItem(Object item, int i)
+    {
+        items.setElementAt(item, i);
+    }
+
+/** Retrieves an item from the items array */
+    public Object getItem(int i)
+    {
+        return items.elementAt(i);
     }
 }

@@ -36,6 +36,7 @@ class Scanner
     public static final TokenType NMTOKEN = new TokenType(20, "NMTOKEN");
 
 	protected Reader in;
+    protected Stack inputStreams;
 	protected Token nextToken;
 	protected int nextChar;
     protected boolean atEOF;
@@ -45,17 +46,14 @@ class Scanner
     protected Hashtable entityExpansion;
     protected int lineNumber;
     protected int column;
+    protected EntityExpansion expander;
 
-	public Scanner(Reader inReader)
+	public Scanner(Reader inReader, EntityExpansion anExpander)
 	{
-        this(inReader, false);
-        expandBuffer = null;
-        entityExpansion = new Hashtable();
-        lineNumber=1;
-        column=1;
+        this(inReader, false, anExpander);
 	}
 
-	public Scanner(Reader inReader, boolean doTrace)
+	public Scanner(Reader inReader, boolean doTrace, EntityExpansion anExpander)
     {
 		in = inReader;
         atEOF = false;
@@ -64,6 +62,7 @@ class Scanner
         entityExpansion = new Hashtable();
         lineNumber=1;
         column=1;
+        expander = anExpander;
     }
 
 	public Token peek()
@@ -91,6 +90,23 @@ class Scanner
 		return retval;
 	}
 
+    protected int readNextChar()
+        throws IOException
+    {
+        int ch = in.read();
+
+        if (ch < 0)
+        {
+            if ((inputStreams != null) && (!inputStreams.empty()))
+            {
+                in.close();
+                in = (Reader) inputStreams.pop();
+                return readNextChar();
+            }
+        }
+        return ch;
+    }
+
 	protected int peekChar()
 		throws IOException
 	{
@@ -101,7 +117,7 @@ class Scanner
 
 		if (nextChar == 0)
 		{
-			nextChar = in.read();
+			nextChar = readNextChar();
             column++;
             if (nextChar == '\n')
             {
@@ -161,6 +177,21 @@ class Scanner
             out.append((char) ch);
         }
         return out.toString();
+    }
+
+    public void skipUntil(char stopChar)
+        throws IOException
+    {
+        int ch;
+
+        while ((ch = read()) >= 0)
+        {
+            if (ch == stopChar)
+            {
+                return;
+            }
+        }
+        return;
     }
 
 	protected Token readNextToken()
@@ -629,6 +660,7 @@ class Scanner
 	}
 
     public boolean expandEntity(String entityName)
+        throws IOException
     {
         String entity = (String) entityExpansion.get(entityName);
         if (entity != null)
@@ -636,6 +668,28 @@ class Scanner
             expand(entity.toCharArray());
             return true;
         }
+
+        entityName = entityName.substring(1, entityName.length()-1);
+
+System.out.println("Trying to expand: "+entityName);
+        DTDEntity realEntity = expander.expandEntity(entityName);
+        if (realEntity != null)
+        {
+            System.out.println("Expanded: "+entityName);
+            Reader entityIn = realEntity.getReader();
+            if (entityIn != null)
+            {
+                if (inputStreams == null)
+                {
+                    inputStreams = new Stack();
+                }
+                inputStreams.push(in);
+                in = entityIn;
+
+                return true;
+            }
+        }
+
         return false;
     }
 

@@ -20,4 +20,11 @@ public class DTDEmpty extends DTDItem
         out.print("EMPTY");
         cardinal.write(out);
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDEmpty)) return false;
+        return super.equals(ob);
+    }
 }

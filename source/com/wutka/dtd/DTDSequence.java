@@ -35,4 +35,12 @@ public class DTDSequence extends DTDContainer
         out.print(")");
         cardinal.write(out);
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDSequence)) return false;
+
+        return super.equals(ob);
+    }
 }

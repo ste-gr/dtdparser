@@ -20,4 +20,12 @@ public class DTDPCData extends DTDItem
         out.print("#PCDATA");
         cardinal.write(out);
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDPCData)) return false;
+
+        return super.equals(ob);
+    }
 }

@@ -36,4 +36,12 @@ public class DTDMixed extends DTDContainer
         out.print(")");
         cardinal.write(out);
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDMixed)) return false;
+
+        return super.equals(ob);
+    }
 }

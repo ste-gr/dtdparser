@@ -62,4 +62,38 @@ public class DTDEnumeration implements DTDOutput
         }
         out.print(")");
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDEnumeration)) return false;
+
+        DTDEnumeration other = (DTDEnumeration) ob;
+        return items.equals(other.items);
+    }
+
+/** Returns the items in the enumeration */
+    public String[] getItem() { return getItems(); }
+
+/** Sets the items in the enumeration */
+    public void setItem(String[] newItems)
+    {
+        items = new Vector(newItems.length);
+        for (int i=0; i < newItems.length; i++)
+        {
+            items.addElement(newItems[i]);
+        }
+    }
+
+/** Stores an item in the enumeration */
+    public void setItem(String item, int i)
+    {
+        items.setElementAt(item, i);
+    }
+
+/** Retrieves an item from the enumeration */
+    public String getItem(int i)
+    {
+        return (String) items.elementAt(i);
+    }
 }

@@ -65,4 +65,106 @@ public class DTDAttribute implements DTDOutput
         }
         //out.println(">");                            Bug!
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDAttribute)) return false;
+
+        DTDAttribute other = (DTDAttribute) ob;
+
+        if (name == null)
+        {
+            if (other.name != null) return false;
+        }
+        else
+        {
+            if (!name.equals(other.name)) return false;
+        }
+
+        if (type == null)
+        {
+            if (other.type != null) return false;
+        }
+        else
+        {
+            if (!type.equals(other.type)) return false;
+        }
+
+        if (decl == null)
+        {
+            if (other.decl != null) return false;
+        }
+        else
+        {
+            if (!decl.equals(other.decl)) return false;
+        }
+
+        if (defaultValue == null)
+        {
+            if (other.defaultValue != null) return false;
+        }
+        else
+        {
+            if (!defaultValue.equals(other.defaultValue)) return false;
+        }
+
+        return true;
+    }
+
+/** Sets the name of the attribute */
+    public void setName(String aName)
+    {
+        name = aName;
+    }
+
+/** Returns the attribute name */
+    public String getName()
+    {
+        return name;
+    }
+
+/** Sets the type of the attribute */
+    public void setType(Object aType)
+    {
+        if (!(aType instanceof String) &&
+            !(aType instanceof DTDEnumeration) &&
+            !(aType instanceof DTDNotationList))
+        {
+            throw new IllegalArgumentException(
+                "Must be String, DTDEnumeration or DTDNotationList");
+        }
+
+        type = aType;
+    }
+
+/** Gets the type of the attribute */
+    public Object getType()
+    {
+        return type;
+    }
+
+/** Sets the declaration (fixed, required, implied) */
+    public void setDecl(DTDDecl aDecl)
+    {
+        decl = aDecl;
+    }
+
+/** Returns the declaration */
+    public DTDDecl getDecl()
+    {
+        return decl;
+    }
+
+/** Sets the default value */
+    public void setDefaultValue(String aDefaultValue)
+    {
+        defaultValue = aDefaultValue;
+    }
+
+/** Returns the default value */
+    public String getDefaultValue()
+    {
+        return defaultValue;
+    }
 }

@@ -35,4 +35,12 @@ public class DTDChoice extends DTDContainer
         out.print(")");
         cardinal.write(out);
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDChoice)) return false;
+
+        return super.equals(ob);
+    }
 }

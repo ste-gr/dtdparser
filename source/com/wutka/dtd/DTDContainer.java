@@ -45,6 +45,49 @@ public abstract class DTDContainer extends DTDItem
         return retval;
     }
 
+    public boolean equals(Object ob)
+    {
+       if (ob == this) return true;
+        if (!(ob instanceof DTDContainer)) return false;
+
+        if (!super.equals(ob)) return false;
+
+        DTDContainer other = (DTDContainer) ob;
+
+        return items.equals(other.items);
+    }
+
+/** Stores items in the container */
+    public void setItem(DTDItem[] newItems)
+    {
+        items = new Vector(newItems.length);
+        for (int i=0; i < newItems.length; i++)
+        {
+            items.addElement(newItems[i]);
+        }
+    }
+
+/** Retrieves the items in the container */
+    public DTDItem[] getItem()
+    {
+        DTDItem[] retval  = new DTDItem[items.size()];
+        items.copyInto(retval);
+
+        return retval;
+    }
+
+/** Stores an item in the container */
+    public void setItem(DTDItem anItem, int i)
+    {
+        items.setElementAt(anItem, i);
+    }
+
+/** Retrieves an item from the container */
+    public DTDItem getItem(int i)
+    {
+        return (DTDItem) items.elementAt(i);
+    }
+
     public abstract void write(PrintWriter out)
         throws IOException;
 }

@@ -24,4 +24,12 @@ public class DTDSystem extends DTDExternalID
             out.print("\"");
         }
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDSystem)) return false;
+
+        return super.equals(ob);
+    }
 }

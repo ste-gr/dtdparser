@@ -29,8 +29,39 @@ public class DTDProcessingInstruction implements DTDOutput
     public void write(PrintWriter out)
         throws IOException
     {
-        out.print("<? ");
+        out.print("<?");
         out.print(text);
         out.println("?>");
+    }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDProcessingInstruction)) return false;
+
+        DTDProcessingInstruction other = (DTDProcessingInstruction) ob;
+
+        if (text == null)
+        {
+            if (other.text != null) return false;
+        }
+        else
+        {
+            if (!text.equals(other.text)) return false;
+        }
+
+        return true;
+    }
+
+/** Sets the instruction text */
+    public void setText(String theText)
+    {
+        text = theText;
+    }
+
+/** Retrieves the instruction text */
+    public String getText()
+    {
+        return text;
     }
 }

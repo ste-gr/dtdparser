@@ -56,4 +56,60 @@ public class DTDAttlist implements DTDOutput
             }
         }
     }
+
+    public boolean equals(Object ob)
+    {
+        if (ob == this) return true;
+        if (!(ob instanceof DTDAttlist)) return false;
+
+        DTDAttlist other = (DTDAttlist) ob;
+
+        if ((name == null) && (other.name != null)) return false;
+        if ((name != null) && !name.equals(other.name)) return false;
+
+        return attributes.equals(other.attributes);
+    }
+
+/** Returns the entity name of this attlist */
+    public String getName()
+    {
+        return name;
+    }
+
+/** Sets the entity name of this attlist */
+    public void setName(String aName)
+    {
+        name = aName;
+    }
+
+/** Returns the attributes in this list */
+    public DTDAttribute[] getAttribute()
+    {
+        DTDAttribute attrs[] = new DTDAttribute[attributes.size()];
+        attributes.copyInto(attrs);
+
+        return attrs;
+    }
+
+/** Sets the list of attributes */
+    public void setAttribute(DTDAttribute[] attrs)
+    {
+        attributes = new Vector(attrs.length);
+        for (int i=0; i < attrs.length; i++)
+        {
+            attributes.addElement(attrs[i]);
+        }
+    }
+
+/** Returns a specific attribute from the list */
+    public DTDAttribute getAttribute(int i)
+    {
+        return (DTDAttribute) attributes.elementAt(i);
+    }
+
+/** Sets a specific attribute in the list */
+    public void setAttribute(DTDAttribute attr, int i)
+    {
+        attributes.setElementAt(attr, i);
+    }
 }
