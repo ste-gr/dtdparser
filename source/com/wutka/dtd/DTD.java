@@ -111,7 +111,7 @@ public class DTD implements DTDOutput
 
             if (itemType.isAssignableFrom(ob.getClass()))
             {
-                results.addElement(itemType);
+                results.addElement(ob);
             }
         }
 

@@ -63,7 +63,11 @@ public class DTDParser implements EntityExpansion
     public DTDParser(URL in)
         throws IOException
     {
-        defaultLocation = in;
+    //LAM: we need to set the defaultLocation to the directory where
+    //the dtd is found so that we don't run into problems parsing any
+    //relative external files referenced by the dtd.
+        String file = in.getFile();
+        defaultLocation = new URL(in.getProtocol(), in.getHost(), in.getPort(), file.substring(0, file.lastIndexOf('/') + 1));
 
         scanner = new Scanner(new BufferedReader(
             new InputStreamReader(in.openStream())), false, this);
@@ -78,7 +82,12 @@ public class DTDParser implements EntityExpansion
     public DTDParser(URL in, boolean trace)
         throws IOException
     {
-        defaultLocation = in;
+    //LAM: we need to set the defaultLocation to the directory where
+    //the dtd is found so that we don't run into problems parsing any
+    //relative external files referenced by the dtd.
+        String file = in.getFile();
+        defaultLocation = new URL(in.getProtocol(), in.getHost(), in.getPort(), file.substring(0, file.lastIndexOf('/') + 1));
+
 
         scanner = new Scanner(new BufferedReader(
             new InputStreamReader(in.openStream())), trace, this);
@@ -490,7 +499,7 @@ public class DTDParser implements EntityExpansion
             {
                 if (cs == null)
                 {
-                    cs = new DTDChoice();
+                    cs = new DTDSequence();
                 }
                 cs.add(item);
                 return cs;
@@ -654,9 +663,18 @@ public class DTDParser implements EntityExpansion
     {
         DTDNotationList notation = new DTDNotationList();
 
+        Token token = scanner.get();
+        if (token.type != Scanner.LPAREN)
+        {
+            throw new DTDParseException(scanner.getUriId(),
+                "Invalid token in notation: "+
+                token.type.name, scanner.getLineNumber(),
+                scanner.getColumn());
+        }
+
         for (;;)
         {
-            Token token = scanner.get();
+            token = scanner.get();
 
             if (token.type != Scanner.IDENTIFIER)
             {

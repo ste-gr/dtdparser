@@ -324,6 +324,10 @@ class Scanner
 					{
 						buff.append((char) read());
 					}
+                    else if (ch < 0)
+                    {
+                        break;  // IF EOF before getting end quote
+                    }
 					else
 					{
 						buff.append((char) ch);
