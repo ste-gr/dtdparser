@@ -3,6 +3,12 @@ package com.wutka.dtd;
 import java.io.*;
 import java.util.*;
 
+/** Lexical scanner for DTD's
+ *
+ * @author Mark Wutka
+ * @version $Revision$ $Date$ by $Author$
+ */
+
 class Scanner
 {
 	public static final TokenType LTQUES = new TokenType(0, "LTQUES");
@@ -27,6 +33,7 @@ class Scanner
         new TokenType(18, "CONDITIONAL");
 	public static final TokenType ENDCONDITIONAL =
         new TokenType(19, "ENDCONDITIONAL");
+    public static final TokenType NMTOKEN = new TokenType(20, "NMTOKEN");
 
 	protected Reader in;
 	protected Token nextToken;
@@ -205,7 +212,9 @@ class Scanner
 			}
 			else if (ch == '?')
 			{
-				ch = peekChar();
+// Need to treat ?> as two separate tokens because
+// <!ELEMENT blah (foo)?> needs the ? as a QUES, not QUESGT
+/*				ch = peekChar();
 	
 				if (ch == '>')
 				{
@@ -215,7 +224,8 @@ class Scanner
 				else
 				{
 					return new Token(QUES);
-				}
+				}*/
+				return new Token(QUES);
 			}
 			else if ((ch == '"') || (ch == '\''))
 			{
@@ -335,6 +345,17 @@ class Scanner
 					buff.append((char) read());
 				}
 				return new Token(IDENTIFIER, buff.toString());
+			}
+			else if (isIdentifierChar((char) ch))
+			{
+				StringBuffer buff = new StringBuffer();
+				buff.append((char) ch);
+	
+				while (isIdentifierChar((char) peekChar()))
+				{
+					buff.append((char) read());
+				}
+				return new Token(NMTOKEN, buff.toString());
 			}
 			else if (ch < 0)
 			{

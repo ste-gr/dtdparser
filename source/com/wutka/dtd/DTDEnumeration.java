@@ -5,7 +5,7 @@ import java.util.*;
 /** Represents an enumeration of attribute values
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDEnumeration
 {

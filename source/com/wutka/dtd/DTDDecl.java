@@ -3,7 +3,7 @@ package com.wutka.dtd;
 /** Represents the possible values for an attribute declaration
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDDecl
 {

@@ -6,7 +6,7 @@ import java.util.*;
  * DTDChoice or a DTDSequence)
  *
  * @author Mark Wutka
- * @version 1.1 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public abstract class DTDContainer extends DTDItem
 {

@@ -5,7 +5,7 @@ package com.wutka.dtd;
  * #PCDATA followed by a list of pipe-separated names.
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDMixed extends DTDContainer
 {

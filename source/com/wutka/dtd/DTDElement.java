@@ -5,7 +5,7 @@ import java.util.*;
 /** Represents an element defined with the ELEMENT DTD tag
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDElement
 {

@@ -5,7 +5,7 @@ import java.util.*;
 /** Represents a notation declaration for an attribute
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDNotationList
 {

@@ -6,7 +6,7 @@ import java.io.*;
 /** Parses a DTD file and returns a DTD object
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDParser
 {
@@ -56,7 +56,16 @@ public class DTDParser
 // Is <? xxx ?> even valid in a DTD?  I'll ignore it just in case it's there
         if (token.type == Scanner.LTQUES)
         {
-            skipUntil(Scanner.QUESGT);
+            for (;;)
+            {
+                skipUntil(Scanner.QUES);
+                token = scanner.peek();
+                if (token.type == Scanner.GT)
+                {
+                    scanner.get();
+                    break;
+                }
+            }
 
             return;
         }
@@ -153,6 +162,8 @@ public class DTDParser
         }
 
         parseContentSpec(scanner, element);
+
+        expect(Scanner.GT);
     }
 
     protected void parseContentSpec(Scanner scanner, DTDElement element)
@@ -169,6 +180,12 @@ public class DTDParser
             else if (token.value.equals("ANY"))
             {
                 element.content = new DTDAny();
+            }
+            else
+            {
+                throw new IOException(
+                    "Invalid token in entity content spec "+
+                        token.value);
             }
         }
         else if (token.type == Scanner.LPAREN)
@@ -498,7 +515,8 @@ public class DTDParser
         {
             Token token = scanner.get();
 
-            if (token.type != Scanner.IDENTIFIER)
+            if ((token.type != Scanner.IDENTIFIER) &&
+                (token.type != Scanner.NMTOKEN))
             {
                 throw new IOException("Invalid token in enumeration: "+
                     token.type.name);

@@ -9,7 +9,7 @@ package com.wutka.dtd;
  * </bl>
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDCardinal
 {

@@ -4,7 +4,7 @@ package com.wutka.dtd;
  * A sequence is declared in the DTD as (value1,value2,value3,etc.)
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public class DTDSequence extends DTDContainer
 {

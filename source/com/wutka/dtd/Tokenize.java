@@ -3,6 +3,12 @@ package com.wutka.dtd;
 import java.io.*;
 import java.util.*;
 
+/** Example program to read a DTD and print out its object model
+ *
+ * @author Mark Wutka
+ * @version $Revision$ $Date$ by $Author$
+ */
+
 class Tokenize
 {
 	public static void main(String[] args)

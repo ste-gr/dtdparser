@@ -3,7 +3,7 @@ package com.wutka.dtd;
 /** Represents any item in the DTD
  *
  * @author Mark Wutka
- * @version 1.0 06/28/2000
+ * @version $Revision$ $Date$ by $Author$
  */
 public abstract class DTDItem
 {
