@@ -72,6 +72,7 @@
     <exec executable="cvs" dir="${dist}">
       <arg line="-q export -D now -d ${prod.distbase} ${prod.name}"/>
     </exec>
+    <copy file="${dist}/${prod.name}${prod.version.major}${prod.version.minor}.jar" todir="${basedir}/${dist}/${prod.distbase}"/>
     <tar tarfile="${dist}/${prod.distbase}.tar"
          basedir="${dist}" includes="${prod.distbase}/**/*"/>
     <gzip zipfile="${dist}/${prod.distbase}.tgz"
