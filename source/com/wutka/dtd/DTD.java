@@ -10,7 +10,7 @@ import java.io.*;
  */
 
 
-public class DTD
+public class DTD implements DTDOutput
 {
 /** Contains all the elements defined in the DTD */
     public Hashtable elements;
@@ -20,6 +20,9 @@ public class DTD
 
 /** Contains all the notations defined in the DTD */
     public Hashtable notations;
+
+/** Contains all the items defined in the DTD in their original order */
+    public Vector items;
 
 /** Contains the element that is most likely the root element  or null
     if the root element can't be determined.  */
@@ -31,6 +34,7 @@ public class DTD
         elements = new Hashtable();
         entities = new Hashtable();
         notations = new Hashtable();
+        items = new Vector();
     }
 
 /** Writes the DTD to an output writer in standard DTD format (the format
@@ -40,10 +44,13 @@ public class DTD
     public void write(PrintWriter outWriter)
         throws IOException
     {
-		TreeMap tm=new TreeMap(elements);
-		Collection values=tm.values();
-		Iterator iterator=values.iterator();
-		while (iterator.hasNext())
-			((DTDElement)iterator.next()).write(outWriter);
+        Enumeration e = items.elements();
+
+        while (e.hasMoreElements())
+        {
+            DTDOutput item = (DTDOutput) e.nextElement();
+
+            item.write(outWriter);
+        }
     }
 }

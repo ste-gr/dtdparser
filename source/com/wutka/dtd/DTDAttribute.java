@@ -8,7 +8,7 @@ import java.io.*;
  * @version $Revision$ $Date$ by $Author$
  */
 
-public class DTDAttribute
+public class DTDAttribute implements DTDOutput
 {
 /** The name of the attribute */
     public String name;

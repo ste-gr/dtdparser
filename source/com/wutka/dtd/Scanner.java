@@ -133,6 +133,24 @@ class Scanner
 		return retval;
 	}
 	
+    public String getUntil(char stopChar)
+        throws IOException
+    {
+        StringBuffer out = new StringBuffer();
+
+        int ch;
+
+        while ((ch = read()) >= 0)
+        {
+            if (ch == stopChar)
+            {
+                return out.toString();
+            }
+            out.append((char) ch);
+        }
+        return out.toString();
+    }
+
 	protected Token readNextToken()
 		throws IOException
 	{
@@ -171,6 +189,13 @@ class Scanner
 						StringBuffer buff = new StringBuffer();
 						for (;;)
 						{
+                            if (peekChar() < 0)
+                            {
+                                throw new IOException(
+                                    "Unterminated comment: <!--"+
+                                    buff.toString());
+                            }
+
 							if (peekChar() != '-')
 							{
 								buff.append((char) read());
@@ -178,6 +203,12 @@ class Scanner
 							else
 							{
 								read();
+                                if (peekChar() < 0)
+                                {
+                                    throw new IOException(
+                                        "Unterminated comment: <!--"+
+                                        buff.toString());
+                                }
 								if (peekChar() == '-')
 								{
 									read();
@@ -188,8 +219,7 @@ class Scanner
 											read());
 									}
 									read();
-//									return new Token(COMMENT, buff.toString());
-                                    break;
+									return new Token(COMMENT, buff.toString());
 								}
 								else
 								{
@@ -198,7 +228,6 @@ class Scanner
 							}
 						}
 					}
-                    continue;
 				}
 				else if (ch == '?')
 				{

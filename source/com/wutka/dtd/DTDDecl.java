@@ -7,7 +7,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDDecl
+public class DTDDecl implements DTDOutput
 {
     public static final DTDDecl FIXED = new DTDDecl(0, "FIXED");
     public static final DTDDecl REQUIRED = new DTDDecl(1, "REQUIRED");

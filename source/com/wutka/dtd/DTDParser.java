@@ -128,16 +128,25 @@ public class DTDParser
 // Is <? xxx ?> even valid in a DTD?  I'll ignore it just in case it's there
         if (token.type == Scanner.LTQUES)
         {
+            StringBuffer textBuffer = new StringBuffer();
+
             for (;;)
             {
-                skipUntil(Scanner.QUES);
+                String text = scanner.getUntil('?');
+                textBuffer.append(text);
+
                 token = scanner.peek();
                 if (token.type == Scanner.GT)
                 {
                     scanner.get();
                     break;
                 }
+                textBuffer.append('?');
             }
+            DTDProcessingInstruction instruct =
+                new DTDProcessingInstruction(textBuffer.toString());
+            
+            dtd.items.addElement(instruct);
 
             return;
         }
@@ -158,6 +167,11 @@ public class DTDParser
         else if (token.type == Scanner.ENDCONDITIONAL)
         {
             // Don't need to do anything for this token
+        }
+        else if (token.type == Scanner.COMMENT)
+        {
+            dtd.items.addElement(
+                new DTDComment(token.value));
         }
         else if (token.type == Scanner.LTBANG)
         {
@@ -233,6 +247,7 @@ public class DTDParser
             dtd.elements.put(element.name, element);
         }
 
+        dtd.items.addElement(element);
         parseContentSpec(scanner, element);
 
         expect(Scanner.GT);
@@ -468,6 +483,10 @@ public class DTDParser
 
         DTDElement element = (DTDElement) dtd.elements.get(token.value);
 
+        DTDAttlist attlist = new DTDAttlist(token.value);
+
+        dtd.items.addElement(attlist);
+
         if (element == null)
         {
             element = new DTDElement(token.value);
@@ -478,17 +497,20 @@ public class DTDParser
 
         while (token.type != Scanner.GT)
         {
-            parseAttdef(scanner, element);
+            parseAttdef(scanner, element, attlist);
             token = scanner.peek();
         }
     }
 
-    protected void parseAttdef(Scanner scanner, DTDElement element)
+    protected void parseAttdef(Scanner scanner, DTDElement element,
+        DTDAttlist attlist)
         throws IOException
     {
         Token token = expect(Scanner.IDENTIFIER);
 
         DTDAttribute attr = new DTDAttribute(token.value);
+
+        attlist.attributes.addElement(attr);
 
         element.attributes.put(token.value, attr);
 
@@ -637,6 +659,8 @@ public class DTDParser
             dtd.entities.put(entity.name, entity);
         }
 
+        dtd.items.addElement(entity);
+
         entity.isParsed = isParsed;
 
         parseEntityDef(entity);
@@ -713,6 +737,7 @@ public class DTDParser
         notation.name = token.value;
 
         dtd.notations.put(notation.name, notation);
+        dtd.items.addElement(notation);
 
         token = expect(Scanner.IDENTIFIER);
 

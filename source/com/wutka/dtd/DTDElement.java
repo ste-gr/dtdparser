@@ -8,7 +8,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDElement
+public class DTDElement implements DTDOutput
 {
 /** The name of the element */
     public String name;
@@ -50,6 +50,7 @@ public class DTDElement
         out.println(">");
         out.println();
 
+/*
         if (attributes.size() > 0)
         {
             out.print("<!ATTLIST ");
@@ -68,5 +69,6 @@ public class DTDElement
 	                out.println(">");
 	    }
         }
+*/
     }
 }

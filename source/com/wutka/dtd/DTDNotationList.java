@@ -8,7 +8,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDNotationList
+public class DTDNotationList implements DTDOutput
 {
     protected Vector items;
 

@@ -20,7 +20,7 @@ public class DTDMixed extends DTDContainer
     public void write(PrintWriter out)
         throws IOException
     {
-        out.print("(");
+        out.print("( ");
 
         Enumeration e = getItemsVec().elements();
         boolean isFirst = true;

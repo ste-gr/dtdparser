@@ -7,7 +7,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDNotation
+public class DTDNotation implements DTDOutput
 {
     public String name;
     public DTDExternalID externalID;

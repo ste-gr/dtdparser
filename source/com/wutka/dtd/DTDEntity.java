@@ -7,7 +7,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDEntity
+public class DTDEntity implements DTDOutput
 {
     public String name;
     public boolean isParsed;
@@ -37,9 +37,11 @@ public class DTDEntity
 
         if (value != null)
         {
-            out.print("\"");
+            char quoteChar = '"';
+            if (value.indexOf(quoteChar) >= 0) quoteChar='\'';
+            out.print(quoteChar);
             out.print(value);
-            out.print("\"");
+            out.print(quoteChar);
         }
         else
         {

@@ -7,7 +7,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public abstract class DTDExternalID
+public abstract class DTDExternalID implements DTDOutput
 {
     public String system;
 

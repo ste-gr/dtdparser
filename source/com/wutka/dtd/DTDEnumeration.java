@@ -8,7 +8,7 @@ import java.io.*;
  * @author Mark Wutka
  * @version $Revision$ $Date$ by $Author$
  */
-public class DTDEnumeration
+public class DTDEnumeration implements DTDOutput
 {
     protected Vector items;
 
